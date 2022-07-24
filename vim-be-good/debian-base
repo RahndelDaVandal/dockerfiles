@@ -1,0 +1,28 @@
+FROM debian:bullseye-slim
+
+ENV USER=debian
+USER root
+RUN apt-get update
+RUN apt-get install sudo
+RUN adduser --disabled-password --gecos '' $USER
+RUN adduser $USER sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER $USER
+WORKDIR /home/$USER
+RUN sudo apt-get update && sudo apt-get install -y \
+fzf git curl wget exa vim \
+build-essential gperf luajit luarocks libuv1-dev \
+libluajit-5.1-dev libunibilium-dev libmsgpack-dev libtermkey-dev \
+libvterm-dev libutf8proc-dev make cmake automake git gettext pkg-config \
+libtool-bin libtool curl ca-certificates \
+&& rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/neovim/neovim
+RUN cd neovim && git checkout release-0.4
+RUN sudo luarocks build mpack
+RUN sudo luarocks build lpeg
+RUN sudo luarocks build inspect
+RUN cd neovim && \
+  make CMAKE_BUILD_TYPE=RelWithDebInfo && \
+  sudo make install

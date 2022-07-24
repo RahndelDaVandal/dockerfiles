@@ -14,9 +14,7 @@ USER $USER
 WORKDIR /home/$USER
 
 RUN sudo apt-get install -y ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip curl doxygen
-RUN sudo apt-get install -y curl git wget vim python3 python3-dev python3-venv fzf zoxide exa bat
-RUN mkdir -p ~/.local/bin
-RUN ln -s /usr/bin/batcat ~/.local/bin/bat
+RUN sudo apt-get install -y curl git wget vim fzf exa 
 RUN mkdir ~/.config
 
-COPY . .
+RUN echo alias "ls=\"exa -alFmh --group-directories-first\"" >> .bash_aliases

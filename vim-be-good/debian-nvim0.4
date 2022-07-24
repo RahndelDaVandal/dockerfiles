@@ -1,0 +1,21 @@
+# Docker Build file for base debian img with nvim 0.4 for vim-be-good
+FROM debian-base
+
+# RUN sudo apt-get install -y ninja-build gettext libtool \
+# libtool-bin autoconf automake cmake g++ pkg-config unzip \
+# curl doxygen git curl wget fzf vim exa
+RUN sudo apt-get update && apt-get install -y \
+build-essential gperf luajit luarocks libuv1-dev \
+libluajit-5.1-dev libunibilium-dev libmsgpack-dev libtermkey-dev \
+libvterm-dev libutf8proc-dev make cmake automake git gettext pkg-config \
+libtool-bin libtool curl ca-certificates \
+&& rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/neovim/neovim
+RUN cd neovim && git checkout release-0.4
+RUN sudo luarocks build mpack
+RUN sudo luarocks build lpeg
+RUN sudo luarocks build inspect
+RUN cd neovim && \
+  make CMAKE_BUILD_TYPE=RelWithDebInfo && \
+  sudo make install
